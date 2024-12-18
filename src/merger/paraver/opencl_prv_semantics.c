@@ -54,8 +54,9 @@ static int OpenCL_Acc_Call (event_t * event, unsigned long long time,
 {
 	unsigned state;
 	unsigned EvType, nEvType;
-	UINT64 EvValue, nEvValue;
-	
+	UINT64 EvValue;
+	long long unsigned int nEvValue;
+
 	UNREFERENCED_PARAMETER(fset);
 
 	EvType  = Get_EvEvent (event);
@@ -98,7 +99,7 @@ static int OpenCL_Acc_Call (event_t * event, unsigned long long time,
 	trace_paraver_state (cpu, ptask, task, thread, time);
 
 	Translate_OpenCL_Operation (EvType, EvValue, &nEvType, &nEvValue);
-	trace_paraver_event (cpu, ptask, task, thread, time, nEvType, nEvValue);
+	trace_paraver_event (cpu, ptask, task, thread, time, nEvType, (UINT64)nEvValue);
 
 	if (EvType == OPENCL_CLENQUEUENDRANGEKERNEL_ACC_EV ||
 	  EvType == OPENCL_CLENQUEUETASK_ACC_EV)
@@ -134,7 +135,8 @@ static int OpenCL_Host_Call (event_t * event, unsigned long long time,
 {
 	unsigned state;
 	unsigned EvType, nEvType;
-	UINT64 EvValue, nEvValue;
+	UINT64 EvValue;
+	long long unsigned int nEvValue;
 	
 	UNREFERENCED_PARAMETER(fset);
 
@@ -173,7 +175,7 @@ static int OpenCL_Host_Call (event_t * event, unsigned long long time,
 	trace_paraver_state (cpu, ptask, task, thread, time);
 
 	Translate_OpenCL_Operation (EvType, EvValue, &nEvType, &nEvValue);
-	trace_paraver_event (cpu, ptask, task, thread, time, nEvType, nEvValue);
+	trace_paraver_event (cpu, ptask, task, thread, time, nEvType, (UINT64) nEvValue);
 
 	if (EvType == OPENCL_CLENQUEUENDRANGEKERNEL_EV ||
 	  EvType == OPENCL_CLENQUEUETASK_EV)

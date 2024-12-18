@@ -33,6 +33,8 @@
 #include "threadid.h"
 #include "xalloc.h"
 
+#include "wrapper.h"
+
 // #define DEBUG 
 
 #if defined(DEBUG)
@@ -399,7 +401,7 @@ int xtr_stats_OMP_get_positive_values(int threadid, xtr_OpenMP_stats_t *omp_stat
  */
 stats_info_t *xtr_stats_OMP_get_types_and_descriptions( void )
 {
-  return &OMP_stats_info;
+  return OMP_stats_info;
 }
 
 /**

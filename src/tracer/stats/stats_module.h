@@ -19,7 +19,7 @@
 typedef struct stats_vtable
 {
   void (*reset) (int threadid, xtr_stats_t * self );
-  void (*copyto) (int threadid, xtr_stats_t * self, struct xtr_stats_t * dest) ;
+  void (*copyto) (int threadid, xtr_stats_t * self, xtr_stats_t * dest) ;
   xtr_stats_t * (*dup) (xtr_stats_t * self);
   void (*subtract) (int threadid, xtr_stats_t * self, xtr_stats_t * subtrahend, xtr_stats_t * destination);
   int (*get_positive_values_and_ids) ( int threadid, xtr_stats_t * self, INT32 * out_type, UINT64 * out_values);

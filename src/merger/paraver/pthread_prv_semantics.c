@@ -62,7 +62,8 @@ static int pthread_Call (event_t * current_event, unsigned long long current_tim
 	unsigned int thread, FileSet_t *fset )
 {
 	unsigned int EvType, nEvType;
-	UINT64 EvValue, nEvValue;
+	UINT64 EvValue;
+	long long unsigned int nEvValue;
 	UNREFERENCED_PARAMETER(fset);
 
 	EvType  = Get_EvEvent (current_event);
@@ -100,7 +101,7 @@ static int pthread_Call (event_t * current_event, unsigned long long current_tim
 		Translate_pthread_Operation (EvType, EvValue?1:0, &nEvType, &nEvValue);
 	else
 		Translate_pthread_Operation (EvType, EvValue, &nEvType, &nEvValue);
-	trace_paraver_event (cpu, ptask, task, thread, current_time, nEvType, nEvValue);
+	trace_paraver_event (cpu, ptask, task, thread, current_time, nEvType, (UINT64) nEvValue);
 
 	return 0;
 }

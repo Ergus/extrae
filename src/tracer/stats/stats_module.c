@@ -32,6 +32,11 @@
 #include "threadid.h"
 #include "xalloc.h"
 
+#if defined(MPI_SUPPORT)
+# include "MPI/mpi_stats.h"
+#endif
+
+
 /**
  * This files manages the runtime statistics reported in burst mode.
  * To add a new runtime statistic provide the functions listed in "stats_vtable_st (stas_module.h)",
@@ -54,7 +59,6 @@
 xtr_stats_t *RuntimeStats[NUM_STATS_GROUPS] = {0};
 stats_info_t *RuntimeDescriptions[NUM_STATS_GROUPS] = {0};
 
-
 /*
   virtual table to achieve polymorphisim
 */
@@ -62,14 +66,14 @@ stats_vtable_st virtual_table [NUM_STATS_GROUPS] =
 {
 	[OMP_STATS_GROUP] =
 	{
-		.reset = xtr_stats_OMP_reset,
-		.copyto = xtr_stats_OMP_copy,
-		.dup = xtr_stats_OMP_dup,
-		.subtract = xtr_stats_OMP_subtract,
-		.get_positive_values_and_ids = xtr_stats_OMP_get_positive_values,
+		.reset = (void (*)(int,  xtr_stats_t *)) xtr_stats_OMP_reset,
+		.copyto = (void (*) (int, xtr_stats_t *, xtr_stats_t *)) xtr_stats_OMP_copy,
+		.dup = (xtr_stats_t* (*) (xtr_stats_t *)) xtr_stats_OMP_dup,
+		.subtract = (void (*) (int, xtr_stats_t *, xtr_stats_t *, xtr_stats_t *) )xtr_stats_OMP_subtract,
+		.get_positive_values_and_ids = (int (*) ( int, xtr_stats_t *, INT32 *, UINT64 *)) xtr_stats_OMP_get_positive_values,
 		.get_ids_and_descriptions = xtr_stats_OMP_get_types_and_descriptions,
-		.realloc = xtr_stats_OMP_realloc,
-		.free = xtr_stats_OMP_free,
+		.realloc = (void (*)(xtr_stats_t *, int)) xtr_stats_OMP_realloc,
+		.free = (void (*)(xtr_stats_t *)) xtr_stats_OMP_free,
 		.nevents = OMP_BURST_STATS_COUNT,
 	},
 #if defined(MPI_SUPPORT)
@@ -168,7 +172,7 @@ void xtr_stats_reset(xtr_stats_t **stats_obj)
 	for (int i=0; i<NUM_STATS_GROUPS; ++i)
 	{
 		if (stats_obj[i] != NULL)
-			virtual_table[stats_obj[i]->category].reset(THREADID, stats_obj);
+			virtual_table[stats_obj[i]->category].reset(THREADID, *stats_obj);
 	}
 }
 
@@ -361,10 +365,12 @@ void xtr_stats_finalize()
  */
 void xtr_print_debug_stats ( int tid )
 {
+	#if defined(MPI_SUPPORT)
 	if (TRACING_MPI_STATISTICS)
-  	xtr_print_debug_mpi_stats(tid);
+  		xtr_print_debug_mpi_stats(tid);
+	#endif
 	if (TRACING_OMP_STATISTICS)
-	  xtr_print_debug_omp_stats(tid);
+		xtr_print_debug_omp_stats(tid);
 }
 
 
